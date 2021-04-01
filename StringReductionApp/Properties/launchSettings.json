@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "StringReductionApp": {
+      "commandName": "Project",
+      "commandLineArgs": "\"abacabab\""
+    }
+  }
+}
