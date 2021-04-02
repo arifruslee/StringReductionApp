@@ -10,35 +10,26 @@ namespace StringReductionApp
         public static string StringReduction(string[] args)
         {
             var inputString = args[0];
-            List<char> checkCharacters = new List<char>() { 'a', 'b', 'c' };
+            var words = new Dictionary<string, string>
+            {
+            {"ab", "c"},
+            {"ac", "b"},
+            {"ba", "c"},
+            {"bc", "a"},
+            {"ca", "b"},
+            {"cb","a"}
+            };
 
-            //Only accept a, b or c combinations.
-            if (inputString.Except(checkCharacters).Any())
+            //Only accept a, b or c combinations (Distinct of dictionary values).
+            var distinctWordsCheck = words.Select(s => Convert.ToChar(s.Value)).Distinct().ToList();
+            if (inputString.Except(distinctWordsCheck).Any())
                 return "Only a, b, c";
 
-            //Loop as long as inputString has any different characters inside to be reduced
+            //Loop through as long as inputString has any different characters inside to be reduced
             while (inputString.Distinct().Count() > 1)
             {
-                List<char> outputCharacters = new List<char>();
-                //Loop through current inputString iteration to check all adjacent chars
-                for (var i = 0; i < inputString.Length; i++)
-                {
-                    var currChar = inputString[i];
-                    char? prevChar = outputCharacters.Count > 0 ? outputCharacters.Last() : null;
-
-                    //On 1st loop or whenever current char and previous char are the same, to move to next char checking
-                    if (i == 0 || currChar == prevChar)
-                    {
-                        outputCharacters.Add(currChar);
-                        continue;
-                    }
-
-                    List<char> processCharacters = new List<char>() { Convert.ToChar(prevChar), currChar };
-                    //Get the char difference between the 2 adjacent chars for reduction
-                    outputCharacters[outputCharacters.Count - 1] = checkCharacters.Except(processCharacters).FirstOrDefault();
-                }
-                //Reassign back for further checking if require anymore processing. Convert Char list back to String
-                inputString = new string(outputCharacters.ToArray());
+                //Replaces inputString according to the dictionary Key Value pair. StringBuilder to be used for the aggregate func for performance.
+                inputString = words.Aggregate(new StringBuilder(inputString), (current, value) => current.Replace(value.Key, value.Value)).ToString();
             }
 
             return inputString.Length.ToString();
